@@ -12,7 +12,7 @@ app.use(express.urlencoded({extended: true}));
 
 // routes
 app.get('/', (req, res, next) => {
-    res.send('hi this is working.');
+    res.send('hi this is still working just making a change.');
 });
 
 // start server
