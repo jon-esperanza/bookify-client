@@ -1,0 +1,15 @@
+{
+  "name": "bookify-user-service",
+  "version": "1.0.0",
+  "description": "User service for bookify.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jon esperanza",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
