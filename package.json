@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "User service for bookify.",
   "main": "app.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "jon esperanza",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.1"
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "method-override": "^3.0.0",
+    "morgan": "^1.10.0"
   }
 }
