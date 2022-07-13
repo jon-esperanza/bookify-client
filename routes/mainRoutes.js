@@ -8,4 +8,6 @@ router.get('/', controller.index);
 
 router.get('/signup', controller.signup);
 
+router.get('/explore', controller.explore);
+
 module.exports = router;

@@ -47,6 +47,8 @@ app.use((err, req, res, next) => {
     }
     res.status(err.status);
     res.render('error', {
+        isAuthenticated: req.oidc.isAuthenticated(),
+        user: req.oidc.user,
         error: err
     });
 });
