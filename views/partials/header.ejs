@@ -14,5 +14,9 @@
   </head>
   <body>
     <div class="sticky-nav">
-      <%- include ('./basic-nav.ejs') %>
+      <% if (isAuthenticated) { %>
+        <%- include ('./auth-nav.ejs') %>
+      <% } else { %>
+          <%- include ('./basic-nav.ejs') %>
+      <% } %>
     <div class="body-container">

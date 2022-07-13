@@ -1,0 +1,35 @@
+<nav class="bg-nav">
+    <div class="nav-container">
+        <a href="/" class="logo-title wte">Bookify</a>
+        <div class="bg-nav-options nuni">
+            <a href="/" class="nav-option wte">dashboard</a>
+            <a href="#" class="nav-option wte">explore</a>
+            <a href="#" class="nav-option wte">collections</a>
+            <a href="#" class="nav-option end wte">insights</a>
+        </div>
+        <div class="dropdown">
+            <button onclick='show()' class="profile wte"><%= user.nickname + " ▾"%> </button>
+            <div id="myDropdown" class="dropdown-content">
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+</div>
+<script>
+function show() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+window.onclick = function(event) {
+    if (!event.target.matches('.profile')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+        }
+        }
+    }
+}
+</script>

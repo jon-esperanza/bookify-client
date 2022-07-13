@@ -295,3 +295,17 @@ a {
     align-items: center;
     color: #252825;
 }
+
+/* DASHBOARD */
+.dashboard-container {
+    width: 100%;
+    padding: 15px 30px;
+    min-height: 300px;
+    border: solid 1px black;
+}
+.dashboard-container-title {
+    font-size: 18px;
+    font-family: 'Source Serif Pro', 'serif';
+    font-weight: bold;
+    color: #252825;
+}
