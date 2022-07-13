@@ -9,6 +9,7 @@ exports.index = (req, res, next) => {
         res.render('./index', renderObj);
     }
 }
+
 exports.signup = (req, res, next) => {
     res.oidc.login({
         returnTo: '/',
@@ -16,4 +17,12 @@ exports.signup = (req, res, next) => {
             screen_hint: 'signup',
         },
     });
+}
+
+exports.explore = (req, res, next) => {
+    const renderObj = {
+        isAuthenticated: req.oidc.isAuthenticated(), 
+        user: req.oidc.user
+    }
+    res.render('./user/explore', renderObj);
 }
