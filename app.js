@@ -1,6 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
+require('dotenv').config();
 const methodOverride = require('method-override');
+const { auth } = require('express-openid-connect');
+const mainRoutes = require('./routes/mainRoutes.js');
 
 // create app
 const app = express();
@@ -9,17 +12,24 @@ const app = express();
 let port = 3000;
 let host = 'localhost';
 app.set('view engine', 'ejs');
+const config = {
+    authRequired: false,
+    auth0Logout: true,
+    secret: process.env.OAUTH_SECRET,
+    baseURL: 'http://localhost:3000',
+    clientID: process.env.OAUTH_CLIENT_ID,
+    issuerBaseURL: process.env.OAUTH_ISSUER_BASE_URL
+};
 
 // mount middlewares
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
+app.use(auth(config));
 
 // routes
-app.get('/', (req, res, next) => {
-    res.render('./index');
-});
+app.use('/', mainRoutes);
 
 // handle undefined routes
 app.use((req, res, next) => {
