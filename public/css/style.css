@@ -463,3 +463,118 @@ a {
     border-radius: 3px;
     border: solid 1px #73D750;
 }
+
+
+/* BOOK PAGE */
+.book-page-container {
+    display: flex;
+    width: 80%;
+    margin: 0 auto;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 60px;
+    min-height: 100%;
+    animation: slide-up 0.5s ease;
+}
+.book-left-panel {
+    display: flex;
+    width: 230px;
+    height: 336px;
+    flex-direction: column;
+}
+.book-left-img {
+    width: 230px;
+    height: 300px;
+    border: solid 1px black;
+}
+.mark-book-btn {
+    height: 25px;
+    padding: 4px;
+    margin-top: 11px;
+    cursor: pointer;
+}
+.add-book-btn {
+    height: 25px;
+    padding: 4px;
+    margin-top: 4px;
+    background-color: #73D750;
+    cursor: pointer;
+}
+.book-right-panel {
+    display: flex;
+    width: 750px;
+    flex-direction: column;
+}
+.book-right-title {
+    line-height: 25px;
+    word-wrap: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    max-height: 50px;
+}
+.book-right-author {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    max-height: 43px;
+}
+.book-right-publisher {
+    font-size: 14px;
+    color: #5B6359;
+    word-wrap: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    font-weight: 400;
+    padding-top: 1.5px;
+    font-family: 'Source Serif Pro', serif;
+    max-width: 100%;
+    max-height: 40px;
+}
+.book-right-tags {
+    display: flex;
+    margin-top: 8px;
+    height: 20px;
+}
+.book-pages {
+    margin-right: 3px;
+    width: fit-content;
+    color: #244264;
+    border-radius: 3px;
+    border: solid 1px #5066d7;
+}
+.page-tag {
+    font-size: 14px;
+    align-items: center;
+    padding: 0px 3px;
+}
+.book-right-desc {
+    margin-top: 15px;
+}
+.book-right-see-more {
+    display: flex;
+    margin-top: 30px;
+}
+.see-more-q {
+    font-size: 14px;
+    font-family: 'Source Serif Pro', serif;
+    color: #252825;
+}
+.see-more-link {
+    margin-left: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Source Serif Pro', serif;
+    color: #73D750;
+}
+
