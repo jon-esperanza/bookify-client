@@ -3,6 +3,11 @@
         <h1 class="page-header">Explore</h1>
         <p class="page-subtitle">Search for books to add to collections or mark them as read</p>
         <form id="search-form" class="explore-search-form">
+            <select id="query-type" onchange="this.className= 'query-select ' + this.options[this.selectedIndex].className" class="query-select title">
+                <option class="title">title</option>
+                <option class="author">author</option>
+                <option class="genre">genre</option>
+            </select>
             <input id="search" class="search-bar" type="text" autocomplete="off" >
             <input class="search-btn" type="image" src="/images/icons8-magnifying-glass-32.png" width="25px" height="25px">
         </form>
@@ -15,9 +20,10 @@
       </div>
 
       <script>        
-        async function queryGoogleAPI(searchTerm) {
+        async function queryGoogleAPI(queryType, searchTerm) {
             const URL = "https://www.googleapis.com/books/v1/volumes?q=";
-            let data = await fetch(URL + searchTerm + '&startIndex=0&maxResults=16&projection=full&printType=books');
+            let queryBuild = queryType == 'author' ? 'inauthor:' : queryType == 'genre' ? 'subject:' : '';
+            let data = await fetch(URL + queryBuild + searchTerm + '&startIndex=0&maxResults=16&projection=full&printType=books');
             if (!data.ok) {
                 let err = new Error('HTTP Error');
                 err.status = data.status;
@@ -32,7 +38,7 @@
             results.forEach((obj, i) => {
                 let book = obj.volumeInfo;
                 let img = book.imageLinks ? book.imageLinks.thumbnail : 'https://books.google.com/googlebooks/images/no_cover_thumb.gif';
-                html += '<a href="#">'
+                html += '<a href="/book?id=' + obj.id + '">'
                     html += '<div class="book-result">';
                         html += '<div class="book-img-container">'
                             html += '<img class="book-img" src=' + img + '>';
@@ -56,19 +62,20 @@
 
         document.getElementById('search-form').addEventListener('submit', async function (event) {
             event.preventDefault();
+            let queryType = document.getElementById('query-type').value; // can only be title, author, or genre
             let searchTerm = document.getElementById('search').value.trim(); // check if empty
 
-            if (searchTerm.length) {
+            if (searchTerm.length && (queryType == 'title' || queryType == 'author' || queryType == 'genre')) {
                 // init request
                 document.getElementById('results').innerHTML = '';
                 document.getElementById('loader').innerHTML = '<div></div><div></div><div></div><div></div><div></div>';
                 // run query based on type
-                let data = await queryGoogleAPI(searchTerm);
+                let data = await queryGoogleAPI(queryType, searchTerm);
                 // display result
                 if (!data.items) {
-                    document.getElementById('result-string').innerHTML =  "0 results for books with title '" + searchTerm + "'";
+                    document.getElementById('result-string').innerHTML =  "0 results for books with " + queryType + " '" + searchTerm + "'";
                 } else {
-                    document.getElementById('result-string').innerHTML = data.items.length + " results for books with title '" + searchTerm + "'";
+                    document.getElementById('result-string').innerHTML = data.items.length + " results for books with " + queryType + " '" + searchTerm + "'";
                 }
                 // populate results
                 document.getElementById('loader').innerHTML = '';
