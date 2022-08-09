@@ -1,0 +1,38 @@
+<%- include ('./partials/header.ejs') %>
+      <div class="book-page-container">
+          <div class="book-left-panel">
+            <img class="book-left-img" src="<%= book.imageLinks ? book.imageLinks.thumbnail : 'https://books.google.com/googlebooks/images/no_cover_thumb.gif' %>">
+            <% if (isAuthenticated) { %>
+                <button class="mark-book-btn">mark book as read</button>
+                <button class="add-book-btn">add to collection</button>
+            <% } %>
+          </div>
+          <div class="book-right-panel">
+            <div style="max-height: 110px;">
+                <h1 class="page-header book-right-title"> <%= book.title %> </h1>
+                <p class="page-subtitle book-right-author"> <%= book.authors ? 'by ' + book.authors[0] : 'No author available'%></p>
+                <p class="book-right-publisher"> <%= (book.publishedDate ? 'published ' + book.publishedDate + ', ' : 'No published date') + (book.publisher ? 'by ' + book.publisher : 'No publisher') %></p>
+            </div>
+            <div class="book-right-tags">
+                <% if (book.categories) { 
+                    let genres = book.categories[0].split('/');
+                    genres.forEach(genre => { %>
+                        <div class="book-genre page-tag">
+                            <%= genre.trim().toLowerCase() %>
+                        </div>
+                    <% })
+                } %>
+                <div class="book-pages page-tag">
+                    <%= book.pageCount %> pages
+                </div>
+            </div>
+            <div class="book-right-desc">
+                <%- book.description ? book.description : 'No description available' %>
+            </div>
+            <div class="book-right-see-more" style="margin-bottom: 50px;">
+                <p class="see-more-q">Interested in reading this book?</p>
+                <a href="<%= book.previewLink %>" target="_blank" class="see-more-link">See Book Online Page ➔</a>
+            </div>
+          </div>
+      </div>
+<%- include('./partials/footer.ejs') %>

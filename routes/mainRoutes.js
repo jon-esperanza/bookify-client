@@ -10,4 +10,6 @@ router.get('/signup', controller.signup);
 
 router.get('/explore', controller.explore);
 
+router.get('/book', controller.book);
+
 module.exports = router;
