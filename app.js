@@ -10,13 +10,13 @@ const app = express();
 
 // configure app
 let port = process.env.PORT || 3000;
-let host = 'localhost';
+let host = '0.0.0.0';
 app.set('view engine', 'ejs');
 const config = {
     authRequired: false,
     auth0Logout: true,
     secret: process.env.OAUTH_SECRET,
-    baseURL: 'http://localhost:3000',
+    baseURL: 'https://bookify-client.herokuapp.com',
     clientID: process.env.OAUTH_CLIENT_ID,
     issuerBaseURL: process.env.OAUTH_ISSUER_BASE_URL
 };
