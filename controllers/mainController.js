@@ -1,7 +1,7 @@
 const fetch = require('node-fetch-commonjs');
 
 async function createUser(user){
-    let data = await fetch(encodeURI('http://localhost:9000/history/' + user), {
+    let data = await fetch(encodeURI('https://bookify-api-1.herokuapp.com/history/' + user), {
         method: 'POST',
     });
     if (!data.ok) {
@@ -12,7 +12,7 @@ async function createUser(user){
 }
 
 async function getHistory(user) {
-    let data = await fetch(encodeURI('http://localhost:9000/history/' + user));
+    let data = await fetch(encodeURI('https://bookify-api-1.herokuapp.com/history/' + user));
     if (!data.ok) {
         if (data.status == 404) {
             await createUser(user)
