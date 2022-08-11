@@ -7,8 +7,34 @@
             <div style="display:flex; gap: 5px;">
             </div>
         </div>
-        <div class="dashboard-container" style="margin-bottom: 50px; display: flex; flex-direction: column;">
+        <div class="dashboard-container" style="margin-bottom: 50px; display: flex; flex-direction: column; min-height: 50px;">
             <h2 class="dashboard-container-title">reading history</h2>
+            <div style="min-height: 70px; max-height: 474px; overflow:scroll;">
+              <% if (history.length) {%>
+                <table class="history-container">
+                  <tr>
+                    <th></th>
+                    <th>title</th>
+                    <th>author</th>
+                    <th>date completed</th>
+                  </tr>
+                  <% history.forEach(book => { %>
+                    <tr class="history-book">
+                      <td><a href="/book?id=<%=book._id%>"><img class="history-book-img" src="<%=book.image%>"></a></td>
+                      <td class="history-book-title">
+                        <%=book.title %>
+                      </td>
+                      <td class="history-book-author">
+                        <%=book.author %>
+                      </td>
+                      <td class="history-book-date">
+                        <%=book.dateCompleted%>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </table>
+              <% }%>
+            </div>
         </div>
       </div>
 <%- include('../partials/footer.ejs') %>
