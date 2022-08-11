@@ -9,7 +9,7 @@ const mainRoutes = require('./routes/mainRoutes.js');
 const app = express();
 
 // configure app
-let port = 3000;
+let port = process.env.PORT || 3000;
 let host = 'localhost';
 app.set('view engine', 'ejs');
 const config = {
