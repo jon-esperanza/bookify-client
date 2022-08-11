@@ -3,8 +3,17 @@
           <div class="book-left-panel">
             <img class="book-left-img" src="<%= book.imageLinks ? book.imageLinks.thumbnail : 'https://books.google.com/googlebooks/images/no_cover_thumb.gif' %>">
             <% if (isAuthenticated) { %>
-                <button class="mark-book-btn">mark book as read</button>
-                <button class="add-book-btn">add to collection</button>
+                <% let className = markedRead ? "unmark-book-btn" : "mark-book-btn"
+                   let text = markedRead ? "unmark book as read" : "mark book as read"
+                   let id = markedRead ? "unmark-btn" : "mark-btn"
+                    %>
+                <button id="<%=id%>" class="<%=className%>" onclick='handleMark()'>
+                    <% if (markedRead) {%>
+                        &times;  
+                    <%}%>
+                    <%=text%>
+                </button>
+                <button id="collection-btn" class="add-book-btn">add to collection</button>
             <% } %>
           </div>
           <div class="book-right-panel">
@@ -34,5 +43,176 @@
                 <a href="<%= book.previewLink %>" target="_blank" class="see-more-link">See Book Online Page ➔</a>
             </div>
           </div>
+          <!-- Mark Book Modal -->
+          <div id="mark-modal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="mark-close close">&times;</span>
+                    <h3>Mark Book as Read</h3>
+                </div>
+                <div class="modal-box">
+                    <form id="mark-form" class="mark-form" method="post" action="http://localhost:9000/history/<%= user.sub %>">
+                        <label class="rating-label">
+                            <strong>How did you like the book?</strong>
+                            <input
+                              id="rating"
+                              class="rating"
+                              max="5"
+                              oninput="this.style.setProperty('--value', this.value)"
+                              step="1"
+                              type="range"
+                              value="1">
+                        </label>
+                        <label class="rating-label">
+                            <strong>When did you finish reading this book?</strong>
+                            <input id="date-completed" class="dateCompleted" type="date" min="1990-01-01">
+                        </label>
+                        <button class="mark-read-btn" type="submit"> mark as read</button>
+                    </form>
+                </div>
+            </div>
+          </div>
+          <!-- Collection Modal -->
+          <div id="collection-modal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="collection-close close">&times;</span>
+                    <h4>Add Book to Collection</h2>
+                </div>
+                <div class="modal-box">
+                    
+                </div>
+            </div>
+          </div>
       </div>
+      <script>
+        
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+        dd = '0' + dd;
+        }
+        if (mm < 10) {
+        mm = '0' + mm;
+        } 
+            
+        today = yyyy + '-' + mm + '-' + dd;
+        document.getElementById("date-completed").setAttribute("max", today);
+        document.getElementById("date-completed").setAttribute("value", today);
+
+        var mBtn = document.getElementById("mark-btn");
+        var cBtn = document.getElementById("collection-btn");
+
+        var mark = document.getElementById("mark-modal");
+        var coll = document.getElementById("collection-modal");
+
+        var mClose = document.getElementsByClassName("mark-close")[0];
+        var cClose = document.getElementsByClassName("collection-close")[0];
+
+        async function handleMark() {
+            let marked = "<%=markedRead%>"
+            if (marked == 'true') {
+                let data = await removeBook()
+            } else {
+                mark.style.display = "block";
+            }
+        }
+        cBtn.onclick = function() {
+            coll.style.display = "block";
+        }
+
+        mClose.onclick = function() {
+            mark.style.display = "none";
+        }
+        cClose.onclick = function() {
+            coll.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == mark) {
+                mark.style.display = "none";
+            }
+            if (event.target == coll) {
+                coll.style.display = "none";
+            }
+        }
+        async function createUser(){
+            let data = await fetch("http://localhost:9000/user/<%=user.sub%>", {
+                        method: 'POST',
+            });
+            if (!data.ok) {
+                let err = new Error('HTTP Error');
+                err.status = data.status;
+                throw err;
+            }
+        }
+        async function removeBook(){
+            let data = await fetch("http://localhost:9000/history/<%=user.sub%>/<%=bookId%>", {
+                        method: 'DELETE',
+            });
+            if (!data.ok) {
+                let err = new Error('HTTP Error');
+                err.status = data.status;
+                throw err;
+            } else {
+                window.location.replace("/book?id=<%=bookId%>");
+            }
+        }
+        function htmlDecode(input) {
+            var doc = new DOMParser().parseFromString(input, "text/html");
+            return doc.documentElement.textContent;
+        }
+
+        async function sendPostRequest(rating, dateCompleted, genre) {
+            let pages = "<%=book.pageCount%>";
+            let title = "<%=book.title%>";
+            let author = "<%=book.authors[0]%>";
+            let image = "<%= book.imageLinks ? book.imageLinks.thumbnail : 'https://books.google.com/googlebooks/images/no_cover_thumb.gif' %>"
+            let body = {
+                _id: "<%=bookId%>",
+                title: htmlDecode(title),
+                author: htmlDecode(author),
+                genre: genre,
+                pages: parseInt(pages),
+                image: htmlDecode(image),
+                rating: parseInt(rating),
+                dateCompleted: dateCompleted
+            }
+            let data = await fetch("http://localhost:9000/history/<%=user.sub%>", {
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!data.ok) {
+                if (data.status == 404) {
+                    await createUser();
+                    await sendPostRequest(rating, dateCompleted, genre)
+                } else {
+                    let err = new Error('HTTP Error');
+                    err.status = data.status;
+                    throw err;
+                }
+            } else {
+                window.location.replace("/book?id=<%=bookId%>");
+            }
+        }
+
+        document.getElementById('mark-form').addEventListener('submit', async function(evt){
+            evt.preventDefault();
+            let rating = document.getElementById("rating").value
+            let dateCompleted = document.getElementById("date-completed").value
+            let genre = "Unknown";
+            let cat = "<%=book.categories%>"
+            if (cat){
+                let genres = cat.split('/');
+                genre = htmlDecode(genres[0].trim().toLowerCase());
+            }
+            let data = await sendPostRequest(rating, dateCompleted, genre);
+        })
+      </script>
 <%- include('./partials/footer.ejs') %>
