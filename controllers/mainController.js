@@ -1,7 +1,7 @@
 const fetch = require('node-fetch-commonjs');
 
 async function createUser(user){
-    let data = await fetch(encodeURI('https://bookify-api-1.herokuapp.com/history/' + user), {
+    let data = await fetch(encodeURI('https://bookify-api-1.herokuapp.com/user/' + user), {
         method: 'POST',
     });
     if (!data.ok) {
