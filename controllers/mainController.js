@@ -16,7 +16,7 @@ async function getHistory(user) {
     if (!data.ok) {
         if (data.status == 404) {
             await createUser(user)
-            await getHistory(user)
+            return await getHistory(user)
         } else {
             let err = new Error('HTTP Error');
             err.status = data.status;
@@ -32,7 +32,7 @@ async function getCollections(user) {
     if (!data.ok) {
         if (data.status == 404) {
             await createUser(user)
-            await getCollections(user)
+            return await getCollections(user)
         } else {
             let err = new Error('HTTP Error');
             err.status = data.status;
@@ -48,7 +48,7 @@ async function getInsights(user) {
     if (!data.ok) {
         if (data.status == 404) {
             await createUser(user)
-            await getInsights(user)
+            return await getInsights(user)
         } else {
             let err = new Error('HTTP Error');
             err.status = data.status;
