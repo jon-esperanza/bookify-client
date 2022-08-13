@@ -82,7 +82,17 @@
                     <h4>Add Book to Collection</h2>
                 </div>
                 <div class="modal-box">
-                    
+                    <form id="add-form">
+                        <label>Select collection: </label>
+                        <select id="selected-collection" style="padding: 5px">
+                            <% if (collections.length) {
+                                collections.forEach(collection => { %>
+                                    <option <% if (collection.books.length && collection.books.some(e => e._id == bookId)){%> disabled <% } %> value="<%=collection._id%>"><%=collection.name%></option>
+                                <%})
+                            }%>
+                        </select>
+                        <button class="create-btn" type="submit"> add </button>
+                    </form>
                 </div>
             </div>
           </div>
@@ -151,6 +161,30 @@
                 throw err;
             }
         }
+        async function addBookToCollection(collectionId, genre) {
+            let title = "<%=book.title%>";
+            let author = "<%=book.authors[0]%>";
+            let image = "<%= book.imageLinks ? book.imageLinks.thumbnail : 'https://books.google.com/googlebooks/images/no_cover_thumb.gif' %>"
+            let body = {
+                _id: "<%=bookId%>",
+                title: htmlDecode(title),
+                author: htmlDecode(author),
+                genre: genre,
+                image: htmlDecode(image),
+            }
+            let data = await fetch("https://bookify-api-1.herokuapp.com/collections/<%=user.sub%>/" + collectionId, {
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!data.ok) {
+                let err = new Error('HTTP Error');
+                err.status = data.status;
+                throw err;
+            } else {
+                window.location.replace("/book?id=<%=bookId%>");
+            }
+        }
         async function removeBook(){
             let data = await fetch("https://bookify-api-1.herokuapp.com/history/<%=user.sub%>/<%=bookId%>", {
                 method: 'DELETE',
@@ -213,6 +247,17 @@
                 genre = htmlDecode(genres[0].trim().toLowerCase());
             }
             let data = await sendPostRequest(rating, dateCompleted, genre);
+        })
+        document.getElementById('add-form').addEventListener('submit', async function(evt){
+            evt.preventDefault();
+            let collection = document.getElementById("selected-collection").value
+            let genre = "Unknown";
+            let cat = "<%=book.categories%>"
+            if (cat){
+                let genres = cat.split('/');
+                genre = htmlDecode(genres[0].trim().toLowerCase());
+            }
+            let data = await addBookToCollection(collection, genre);
         })
       </script>
 <%- include('./partials/footer.ejs') %>

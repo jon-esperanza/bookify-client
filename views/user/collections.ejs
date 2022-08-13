@@ -1,0 +1,163 @@
+<%- include ('../partials/header.ejs') %>
+      <div class="page-container nuni">
+        <h1 class="page-header">Book Collections</h1>
+        <p class="page-subtitle">Organize your books with collections</p>
+        <div class="collections-container">
+            <button id="create-btn" class="create-collection-btn">create a collection</button>
+            <% if (collections.length) {
+                collections.forEach(collection => { %>
+                    <div class="collection-container">
+                        <div class="collection-header" style="display:flex; align-items: center;">
+                            <div class="collection-title" style="width: 100%"><%=collection.name%></div>
+                            <span class="remove-collection close" collectionId="<%=collection._id%>">&times;</span>
+                        </div>
+                        <div class="collection-books "style="max-height: 474px; overflow:scroll; z-index: 999;">
+                            <% if (collection.books.length) {%>
+                              <table class="history-container">
+                                <tr>
+                                  <th></th>
+                                  <th>title</th>
+                                  <th>author</th>
+                                  <th>genre</th>
+                                  <th></th>
+                                </tr>
+                                <% collection.books.forEach(book => { %>
+                                  <tr class="history-book">
+                                    <td><a href="/book?id=<%=book._id%>"><img class="history-book-img" src="<%=book.image%>"></a></td>
+                                    <td class="history-book-title">
+                                      <%=book.title %>
+                                    </td>
+                                    <td class="history-book-author">
+                                      <%=book.author %>
+                                    </td>
+                                    <td class="history-book-genre">
+                                      <%=book.genre %>
+                                    </td>
+                                    <td>
+                                        <span class="remove-book close" style="font-weight: 100; font-size: 22px;" collectionId="<%=collection._id%>" bookId="<%=book._id%>">&times;</span>
+                                    </td>
+                                  </tr>
+                                <% }) %>
+                              </table>
+                            <% }%>
+                          </div>
+                    </div>
+                <%})
+            } %>
+        </div>
+        <!-- Collection Modal -->
+        <div id="create-modal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="create-close close">&times;</span>
+                    <h4>Create a Collection</h2>
+                </div>
+                <div class="modal-box" style="margin-left: 25px">
+                    <form id="create-form">
+                        <label style="margin-right: 5px;">Name:</label>
+                        <input id="name" type="text" style="width: 220px">
+                        <button class="create-btn" type="submit">create</button>
+                    </form>
+                </div>
+            </div>
+          </div>
+      </div>
+      <script>
+          const collectionTitle = document.getElementsByClassName('collection-title');
+          const collections = document.getElementsByClassName('collection-container');
+          const create = document.getElementById('create-btn');
+          var createModal = document.getElementById("create-modal");
+          var close = document.getElementsByClassName("create-close")[0];
+          var remove = document.getElementsByClassName("remove-collection");
+          var removeBook = document.getElementsByClassName("remove-book");
+          create.onclick = function() {
+            createModal.style.display = "block";
+          }
+          close.onclick = function() {
+            createModal.style.display = "none";
+          }
+          // When the user clicks anywhere outside of the modal, close it
+          window.onclick = function(event) {
+            if (event.target == createModal) {
+                createModal.style.display = "none";
+            }
+          }
+          for (i=0; i < removeBook.length; i++) {
+            removeBook[i].onclick = async function () {
+                await removeBookFromCollection(this.getAttribute("collectionId"), this.getAttribute("bookId"));
+            }
+          }
+          for (i=0; i < collectionTitle.length; i++) {
+            collectionTitle[i].onclick = function () {
+                this.parentNode.parentNode.classList.toggle('active')
+            }
+          }
+          for (i=0; i < remove.length; i++) {
+            remove[i].onclick = async function () {
+                let confirm = window.confirm("Are you sure you want to delete this collection?")
+                if (confirm == true) {
+                    await removeCollection(this.getAttribute("collectionId"))
+                }
+            }
+          }
+          async function removeCollection(collectionId) {
+            let data = await fetch("https://bookify-api-1.herokuapp.com/collections/<%=user.sub%>/" + collectionId, {
+                method: 'DELETE',
+            });
+            if (!data.ok) {
+                let err = new Error('HTTP Error');
+                err.status = data.status;
+                throw err;
+            } else {
+                window.location.replace("/collections");
+            }
+          }
+          async function removeBookFromCollection(collectionId, bookId) {
+            let data = await fetch("https://bookify-api-1.herokuapp.com/collections/<%=user.sub%>/" + collectionId + "/" + bookId, {
+                method: 'DELETE',
+            });
+            if (!data.ok) {
+                let err = new Error('HTTP Error');
+                err.status = data.status;
+                throw err;
+            } else {
+                window.location.replace("/collections");
+            }
+          }
+          async function createUser(){
+            let data = await fetch("https://bookify-api-1.herokuapp.com/user/<%=user.sub%>", {
+                method: 'POST',
+            });
+            if (!data.ok) {
+                let err = new Error('HTTP Error');
+                err.status = data.status;
+                throw err;
+            }
+        }
+          async function createCollection(body) {
+            let data = await fetch("https://bookify-api-1.herokuapp.com/collections/<%=user.sub%>", {
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!data.ok) {
+                if (data.status == 404) {
+                    await createUser();
+                    await createCollection(body)
+                } else {
+                    let err = new Error('HTTP Error');
+                    err.status = data.status;
+                    throw err;
+                }
+            } else {
+                window.location.replace("/collections");
+            }
+          }
+          document.getElementById('create-form').addEventListener('submit', async function(evt){
+            evt.preventDefault();
+            let name = document.getElementById("name").value
+            let data = await createCollection({name: name, books: [], _id: ""});
+        })
+      </script>
+<%- include('../partials/footer.ejs') %>

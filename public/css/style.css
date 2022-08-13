@@ -617,6 +617,69 @@ table,th,td {
     gap: 30px;
 }
 
+/* COLLECTIONS */
+.collections-container {
+    margin-top: 4px;
+    width: 100%;
+}
+.collection-container {
+    width: 100%;
+    min-height: 60px;
+    border: solid 1px black;
+    display: flex;
+    padding: 0 15px;
+    margin-bottom: 10px;
+    flex-direction: column;
+    cursor: pointer;
+    z-index: 90;
+    transition-delay: 1s;
+    transition-property: height;
+}
+.collection-title {
+    position: relative;
+    font-family: 'Source Serif Pro', 'serif';
+    font-weight: bold;
+    padding-top: 20px;
+    font-size: 18px;
+    color: #252825;
+    height: 60px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.collection-books {
+    border-top: solid 1px black;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    height: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+}
+.collection-container.active .collection-books {
+    display: flex;
+    opacity: 1;
+    max-height: 474px;
+    height: auto;
+    min-height: 60px;
+    visibility: visible;
+    flex-direction: column;
+}
+.collection-container.active {
+    height: auto;
+    transition: height 0.4s ease-out;
+}
+.create-collection-btn {
+    position: relative;
+    float: right;
+    background-color: #73D750;
+    margin-bottom: 5px;
+    padding: 4px;
+    height: 25px;
+    width: 150px;
+    cursor: pointer;
+}
+
 /* MODALS */
 /* The Modal (background) */
 .modal {
@@ -719,6 +782,12 @@ table,th,td {
 .mark-read-btn {
     margin-left: 80%;
     margin-top: 30px;
+    cursor: pointer;
+    background-color:hsl(104, 63%, 58%)
+}
+.create-btn {
+    float:right;
+    margin-top: 5px;
     cursor: pointer;
     background-color:hsl(104, 63%, 58%)
 }
