@@ -26,6 +26,21 @@ async function getHistory(user) {
     }
 }
 
+async function getInsights(user) {
+    let data = await fetch(encodeURI('https://bookify-api-1.herokuapp.com/history/' + user + "/insights"));
+    if (!data.ok) {
+        if (data.status == 404) {
+            await createUser(user)
+            await getInsights(user)
+        }
+        let err = new Error('HTTP Error');
+        err.status = data.status;
+        throw err;
+    } else {
+        return data.json()
+    }
+}
+
 
 exports.index = async (req, res, next) => {
     const renderObj = {
@@ -34,7 +49,9 @@ exports.index = async (req, res, next) => {
     }
     if (req.oidc.isAuthenticated()) {
         let history = await getHistory(req.oidc.user.sub)
+        let insights = await getInsights(req.oidc.user.sub)
         renderObj.history = history;
+        renderObj.insights = insights;
         res.render('./user/dashboard', renderObj);
     } else {
         res.render('./index', renderObj);
@@ -81,4 +98,18 @@ exports.book = async (req, res, next) => {
         }
         res.render('./book', renderObj);
     }
+}
+
+exports.insights = async (req, res, next) => {
+    let insights = await getInsights(req.oidc.user.sub)
+    const renderObj = {
+        isAuthenticated: req.oidc.isAuthenticated(), 
+        user: req.oidc.user,
+        bookPageYTD: insights.bookPageYTD,
+        top5Books: insights.top5Books,
+        top5Genres: insights.top5Genres,
+        top5Authors: insights.top5Authors,
+        totals: insights.totals
+    }
+    res.render('./user/insights', renderObj);
 }
