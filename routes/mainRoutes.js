@@ -14,4 +14,6 @@ router.get('/book', controller.book);
 
 router.get('/insights', controller.insights);
 
+router.get('/collections', controller.collections);
+
 module.exports = router;
