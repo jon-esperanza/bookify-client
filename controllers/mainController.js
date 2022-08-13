@@ -76,7 +76,7 @@ exports.index = async (req, res, next) => {
 
 exports.signup = (req, res, next) => {
     res.oidc.login({
-        returnTo: '/',
+        returnTo: '/explore',
         authorizationParams: {
             screen_hint: 'signup',
         },
