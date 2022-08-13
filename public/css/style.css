@@ -606,6 +606,17 @@ table,th,td {
     font-family: 'Source Serif Pro', serif;
     color: #73D750;
 }
+
+/* INSIGHTS */
+.insights-container {
+    margin-top: 33px;
+}
+.insights-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
 /* MODALS */
 /* The Modal (background) */
 .modal {

@@ -1,0 +1,224 @@
+<%- include ('../partials/header.ejs') %>
+      <div class="page-container nuni">
+        <h1 class="page-header">Insights</h1>
+        <p class="page-subtitle">Get a better look at the books you've read</p>
+        <div class="insights-container">
+            <div class="insights-row" style="margin-bottom: 30px;">
+                <div class="dashboard-container">
+                    <h2 class="dashboard-container-title" style="margin-bottom: 12px">books and pages read</h2>
+                    <canvas id="books-read-chart" style="width: 100%; max-height: 300px;"></canvas>
+                </div>
+                <div class="dashboard-container" style="display: flex; flex-direction: column; width: 50%">
+                    <h2 class="dashboard-container-title" style="margin-bottom: 12px; max-height: 300px">top books</h2>
+                    <% if (top5Books.length) { %>
+                        <table class="history-container">
+                            <tr>
+                              <th>title</th>
+                              <th>author</th>
+                              <th>rating</th>
+                            </tr>
+                            <% top5Books.forEach(book => { %>
+                              <tr class="history-book">
+                                <td class="history-book-title">
+                                  <a style='text-decoration: underline' href="/book?id=<%=book._id%>"><%=book.title %></a>
+                                </td>
+                                <td class="history-book-author">
+                                  <%=book.author %>
+                                </td>
+                                <td class="history-book-date">
+                                  <%=book.rating%>
+                                </td>
+                              </tr>
+                            <% }) %>
+                          </table>
+                    <%}%>
+                </div>
+            </div>
+            <div class="insights-row" style="margin-bottom: 50px;">
+                <div class="dashboard-container" style="width: 100%">
+                    <h2 class="dashboard-container-title" style="margin-bottom: 12px">book genres</h2>
+                    <canvas id="books-genres-chart" style="width: 100%; max-height: 300px;"></canvas>
+                </div>
+                <div class="dashboard-container" style="width: 70%">
+                    <h2 class="dashboard-container-title" style="margin-bottom: 12px">favorite authors</h2>
+                    <canvas id="books-authors-chart" style="width: 100%; max-height: 300px;"></canvas>
+                </div>
+                <div class="dashboard-container" style="width: 40%; max-height:220px !important; min-height: 220px !important;">
+                    <h2 class="dashboard-container-title" style="margin-bottom: 12px;">all-time stats</h2>
+                    <table class="history-container">
+                        <tr>
+                            <th style="text-align: left;">Books</th>
+                            <td style="text-align: right"><%=totals.books%></td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: left">Pages</th>
+                            <td style="text-align: right"><%=totals.pages%></td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: left">Genres</th>
+                            <td style="text-align: right"><%=totals.genres%></td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: left">Authors</th>
+                            <td style="text-align: right"><%=totals.authors%></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+      </div>
+      <script>
+        const booksRead = document.getElementById('books-read-chart');
+        const bookGenre = document.getElementById('books-genres-chart');
+        const bookAuthor = document.getElementById('books-authors-chart');
+        const bookOverview = document.getElementById('books-overview-chart');
+
+        const bookPageYTD = <%-JSON.stringify(bookPageYTD)%>;
+        const top5Books = <%-JSON.stringify(top5Books)%>;
+        const top5Genres = <%-JSON.stringify(top5Genres)%>;
+        const top5Authors = <%-JSON.stringify(top5Authors)%>;
+        const bookTotals = <%-JSON.stringify(totals)%>;
+
+        var xReadValues = Object.keys(bookPageYTD).reverse();
+        var yReadValues = Object.entries(bookPageYTD).map(([key,value])=> value.books).reverse();
+        var yPageValues = Object.entries(bookPageYTD).map(([key,value])=> value.pages).reverse();
+        new Chart(booksRead, {
+          type: "bar",
+          data: {
+            labels: xReadValues,
+            datasets: [
+              {
+                label: "Books Read",
+                borderColor: "#252825",
+                backgroundColor: "#73D750",
+                borderWidth: 1.5,
+                fill: true,
+                order: 0,
+                data: yReadValues,
+                yAxisID: 'y',
+              },
+              {
+                label: "Pages Read",
+                backgroundColor: "#74d7507d",
+                borderColor: "#252825",
+                borderWidth: 1.2,
+                order: 1,
+                data: yPageValues,
+                yAxisID: 'y1',
+              }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              yAxes: [
+                {
+                  id: 'y',
+                  type: 'linear',
+                  position: 'left',
+                  ticks: {
+                      fontFamily: 'Nunito',
+                  },
+                  beginAtZero: true
+                },
+                {
+                  id: 'y1',
+                  type: 'linear',
+                  position: 'right',
+                  gridLines: {
+                    drawOnChartArea: false
+                  },
+                  ticks: {
+                      fontFamily: 'Nunito',
+                  },
+                  beginAtZero: true
+                }
+              ],
+              xAxes: [{
+                  ticks: {
+                      fontFamily: 'Nunito'
+                  }
+              }]
+            },
+            legend: {
+              display: true
+            }
+          }
+        });
+
+        var xGenreValues = top5Genres.map(obj => obj.genre);
+        var yGenreValues = top5Genres.map(obj => obj.avgRating);
+        var colors = [];
+        var rcolor = 115 / (xGenreValues.length - 1);
+        var gcolor = 215 / (xGenreValues.length - 1);
+        var bcolor = 80 / (xGenreValues.length - 1);
+        for(let i = 1; i < xGenreValues.length + 1; i++) {
+          colors.push(`rgb(${rcolor * i}, ${gcolor * i}, ${bcolor * i})`)
+        }
+        new Chart(bookGenre, {
+          type: "doughnut",
+          data: {
+            labels: xGenreValues,
+            datasets: [{
+              label: 'Average Rating',
+              backgroundColor: colors.reverse(),
+              borderColor: "#252825",
+              borderWidth: 1.5,
+              data: yGenreValues
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+              position: 'right'
+            }
+          }
+        });
+
+        var xAuthorValues = top5Authors.map(obj => obj.author);
+        var yAuthorValues = top5Authors.map(obj => obj.avgRating);
+        var colors = [];
+        var rcolor = 115 / (xAuthorValues.length - 1);
+        var gcolor = 215 / (xAuthorValues.length - 1);
+        var bcolor = 80 / (xAuthorValues.length - 1);
+        for(let i = 1; i < xAuthorValues.length + 1; i++) {
+          colors.push(`rgb(${rcolor * i}, ${gcolor * i}, ${bcolor * i})`)
+        }
+        new Chart(bookAuthor, {
+          type: "horizontalBar",
+          data: {
+            labels: xAuthorValues,
+            datasets: [{
+                label: 'Average Rating',
+                backgroundColor: colors.reverse(),
+                borderColor: "#252825",
+                borderWidth: 1.5,
+                data: yAuthorValues
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              yAxes: [{
+                stacked: true,
+                ticks: {
+                  fontFamily: 'Nunito',
+                  beginAtZero: true
+                }
+              }],
+              xAxes: [{
+                  ticks: {
+                      fontFamily: 'Nunito',
+                      beginAtZero: true
+                  }
+              }]
+            },
+            legend: {
+              display: false
+            }
+          }
+        });
+    </script>
+<%- include('../partials/footer.ejs') %>
