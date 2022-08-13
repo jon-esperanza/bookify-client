@@ -17,10 +17,11 @@ async function getHistory(user) {
         if (data.status == 404) {
             await createUser(user)
             await getHistory(user)
+        } else {
+            let err = new Error('HTTP Error');
+            err.status = data.status;
+            throw err;
         }
-        let err = new Error('HTTP Error');
-        err.status = data.status;
-        throw err;
     } else {
         return data.json()
     }
@@ -32,10 +33,11 @@ async function getCollections(user) {
         if (data.status == 404) {
             await createUser(user)
             await getCollections(user)
+        } else {
+            let err = new Error('HTTP Error');
+            err.status = data.status;
+            throw err;
         }
-        let err = new Error('HTTP Error');
-        err.status = data.status;
-        throw err;
     } else {
         return data.json()
     }
@@ -47,10 +49,11 @@ async function getInsights(user) {
         if (data.status == 404) {
             await createUser(user)
             await getInsights(user)
+        } else {
+            let err = new Error('HTTP Error');
+            err.status = data.status;
+            throw err;
         }
-        let err = new Error('HTTP Error');
-        err.status = data.status;
-        throw err;
     } else {
         return data.json()
     }
